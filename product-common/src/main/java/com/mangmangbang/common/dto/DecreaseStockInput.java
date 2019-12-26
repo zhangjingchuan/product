@@ -1,17 +1,13 @@
-package com.mangmangbang.product.server.dto;
+package com.mangmangbang.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * created by zhangjingchuan on 2019/12/25
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartDTO {
-
+public class DecreaseStockInput {
     /**
      * 商品的id
      */

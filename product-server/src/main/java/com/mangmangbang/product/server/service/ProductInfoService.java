@@ -1,7 +1,7 @@
 package com.mangmangbang.product.server.service;
 
-import com.mangmangbang.product.server.dto.CartDTO;
-import com.mangmangbang.product.server.pojo.ProductInfo;
+import com.mangmangbang.common.dto.DecreaseStockInput;
+import com.mangmangbang.common.dto.ProductInfoOutput;
 
 import java.util.List;
 
@@ -14,18 +14,18 @@ public interface ProductInfoService {
      * 查询所有在架商品列表
      * @return
      */
-    List<ProductInfo> findUpAll();
+    List<ProductInfoOutput> findUpAll();
 
     /**
      * 根据指定id获取商品列表
      * @param productIdList
      * @return
      */
-    List<ProductInfo> findByProductIdIn(List<String> productIdList);
+    List<ProductInfoOutput> findByProductIdIn(List<String> productIdList);
 
     /**
      * 扣除库存
-     * @param cartDTOList
+     * @param decreaseStockInputList
      */
-    void decreaseStock(List<CartDTO> cartDTOList);
+    void decreaseStock(List<DecreaseStockInput> decreaseStockInputList);
 }

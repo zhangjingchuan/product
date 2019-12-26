@@ -9,9 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.mangmangbang</groupId>
+    <packaging>jar</packaging>
     <artifactId>product-common</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <name>product-common</name>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
 </project>

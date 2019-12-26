@@ -1,8 +1,8 @@
 package com.mangmangbang.product.server.controller;
 
-import com.mangmangbang.product.server.dto.CartDTO;
+import com.mangmangbang.common.dto.DecreaseStockInput;
+import com.mangmangbang.common.dto.ProductInfoOutput;
 import com.mangmangbang.product.server.pojo.ProductCategory;
-import com.mangmangbang.product.server.pojo.ProductInfo;
 import com.mangmangbang.product.server.service.ProductCategoryService;
 import com.mangmangbang.product.server.service.ProductInfoService;
 import com.mangmangbang.product.server.vo.ProductInfoVo;
@@ -32,9 +32,9 @@ public class ProductController {
     @GetMapping("/list")
     public ResultFormat list(){
         //查询所有在架的商品
-        List<ProductInfo> productInfoList = this.productInfoService.findUpAll();
+        List<ProductInfoOutput> productInfoOutputList = this.productInfoService.findUpAll();
         //获取类目type列表
-        List<Integer> categoryTypeList = productInfoList.stream().map(p -> p.getCategoryType()).collect(Collectors.toList());
+        List<Integer> categoryTypeList = productInfoOutputList.stream().map(p -> p.getCategoryType()).collect(Collectors.toList());
         //从数据库查询类目
         List<ProductCategory> categoryList = this.productCategoryService.findByCategoryTypeIn(categoryTypeList);
 
@@ -43,10 +43,10 @@ public class ProductController {
         for(ProductCategory productCategory : categoryList){
 
             List<ProductInfoVo> productInfoVoList = new ArrayList<>();
-            for(ProductInfo productInfo : productInfoList){
-                if(productInfo.getCategoryType().equals(productCategory.getCategoryType())) {
+            for(ProductInfoOutput productInfoOutput : productInfoOutputList){
+                if(productInfoOutput.getCategoryType().equals(productCategory.getCategoryType())) {
                     ProductInfoVo productInfoVo = ProductInfoVo.builder().build();
-                    BeanUtils.copyProperties(productInfo, productInfoVo);
+                    BeanUtils.copyProperties(productInfoOutput, productInfoVo);
                     productInfoVoList.add(productInfoVo);
                 }
             }
@@ -68,18 +68,18 @@ public class ProductController {
      * @return
      */
     @PostMapping("/listForOrder")
-    public List<ProductInfo> listForOrder(@RequestBody List<String> productIdList){
+    public List<ProductInfoOutput> listForOrder(@RequestBody List<String> productIdList){
 
-        List<ProductInfo> list = this.productInfoService.findByProductIdIn(productIdList);
+        List<ProductInfoOutput> list = this.productInfoService.findByProductIdIn(productIdList);
         return list;
     }
 
     /**
      * 删除购物车
-     * @param cartDTOList
+     * @param decreaseStockInputList
      */
     @PostMapping("/decreaseStock")
-    public void decreaseStock(@RequestBody List<CartDTO> cartDTOList){
-        this.productInfoService.decreaseStock(cartDTOList);
+    public void decreaseStock(@RequestBody List<DecreaseStockInput> decreaseStockInputList){
+        this.productInfoService.decreaseStock(decreaseStockInputList);
     }
 }
