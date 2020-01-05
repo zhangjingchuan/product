@@ -1,5 +1,6 @@
 package com.mangmangbang.product.server.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.mangmangbang.common.dto.DecreaseStockInput;
 import com.mangmangbang.common.dto.ProductInfoOutput;
 import com.mangmangbang.product.server.enums.ProductStatusEnum;
@@ -8,6 +9,8 @@ import com.mangmangbang.product.server.exception.ProductException;
 import com.mangmangbang.product.server.pojo.ProductInfo;
 import com.mangmangbang.product.server.repository.ProductInfoRepository;
 import com.mangmangbang.product.server.service.ProductInfoService;
+import com.rabbitmq.tools.json.JSONUtil;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,8 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Resource
     private ProductInfoRepository productInfoRepository;
+    @Resource
+    private AmqpTemplate amqpTemplate;
     @Override
     public List<ProductInfoOutput> findUpAll() {
 
@@ -85,6 +90,11 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
             productInfo.setProductStock(count);
             this.productInfoRepository.save(productInfo);
+
+            ProductInfoOutput productInfoOutput = new ProductInfoOutput();
+            BeanUtils.copyProperties(productInfo,productInfoOutput);
+            //发送mq的消息
+            amqpTemplate.convertAndSend("productInfo", JSON.toJSONString(productInfoOutput));
         }
     }
 }
