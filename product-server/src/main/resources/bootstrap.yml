@@ -8,7 +8,7 @@ spring:
         service-id: CONFIG
       profile: dev
   profiles:
-    active: prod
+    active: dev
 eureka:
   client:
     service-url:

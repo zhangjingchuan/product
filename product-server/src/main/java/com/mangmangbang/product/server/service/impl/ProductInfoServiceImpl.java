@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,8 +70,26 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     }
 
     @Override
-    @Transactional
     public void decreaseStock(List<DecreaseStockInput> decreaseStockInputList) {
+
+        List<ProductInfo> productInfos = this.decreaseStockProcess(decreaseStockInputList);
+
+        List<ProductInfoOutput> productInfoOutputList = productInfos.stream().map(productInfo -> {
+            ProductInfoOutput productInfoOutput = new ProductInfoOutput();
+            BeanUtils.copyProperties(productInfo, productInfoOutput);
+
+            return productInfoOutput;
+        }).collect(Collectors.toList());
+
+        //发送mq的消息
+        amqpTemplate.convertAndSend("productInfo", JSON.toJSONString(productInfoOutputList));
+
+    }
+
+
+    @Transactional
+    public List<ProductInfo> decreaseStockProcess(List<DecreaseStockInput> decreaseStockInputList) {
+        List<ProductInfo> list = new ArrayList<>();
         for(DecreaseStockInput decreaseStockInput : decreaseStockInputList){
             //查询商品
             Optional<ProductInfo> productInfoOptional = this.productInfoRepository.findById(decreaseStockInput.getProductId());
@@ -91,10 +110,9 @@ public class ProductInfoServiceImpl implements ProductInfoService {
             productInfo.setProductStock(count);
             this.productInfoRepository.save(productInfo);
 
-            ProductInfoOutput productInfoOutput = new ProductInfoOutput();
-            BeanUtils.copyProperties(productInfo,productInfoOutput);
-            //发送mq的消息
-            amqpTemplate.convertAndSend("productInfo", JSON.toJSONString(productInfoOutput));
+            list.add(productInfo);
         }
+
+        return list;
     }
 }
