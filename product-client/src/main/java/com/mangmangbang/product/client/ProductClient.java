@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "PRODUCT-CLIENT")
+@FeignClient(name = "PRODUCT")
 public interface ProductClient {
 
     /**
